@@ -1,4 +1,4 @@
-name: Build and run main program
+name: CI
 
 on:
   push:
