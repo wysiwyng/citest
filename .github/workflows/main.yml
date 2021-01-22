@@ -37,11 +37,13 @@ jobs:
       - name: Save results
         run: |
           rm -rf benchmark_results_new
-          mkdir -p benchmarks_results_new
-          cp run_results.json benchmark_results_new
+          mkdir benchmarks_results_new
+          cp run_results.json benchmark_results_new/
 
       - name: List output dir
-        run: ls -la benchmark_results_new
+        run: |
+          ls -la
+
 
       - name: Deploy results to git
         uses: peaceiris/actions-gh-pages@v3
