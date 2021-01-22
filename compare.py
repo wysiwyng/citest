@@ -16,6 +16,9 @@ f2_mips = f2_dict['mips']
 lower_bound = f1_mips * TOLERANCE
 upper_bound = f1_mips * (2 - TOLERANCE)
 
+print(f'f1 mips: {f1_mips}')
+print(f'f2 mips: {f2_mips}')
+
 if f2_mips < lower_bound:
     sys.exit(2)
 elif f2_mips > upper_bound:
