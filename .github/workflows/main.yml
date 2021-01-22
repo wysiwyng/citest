@@ -27,6 +27,7 @@ jobs:
           path: citest.tar.gz
 
   run:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
