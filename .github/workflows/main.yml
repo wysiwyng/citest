@@ -44,6 +44,11 @@ jobs:
           rm -rf benchmark_results_new
           mkdir benchmarks_results_new
 
+      - name: List output dir
+        run: |
+          pwd
+          ls -la
+
       - name: Save benchmark results
         run: cp run_results.json benchmark_results_new/
 
