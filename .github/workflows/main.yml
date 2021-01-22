@@ -15,20 +15,58 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: compress program
+        run: |
+          mkdir citest
+          cp test.py compare.py citest
+          tar -czf citest.tar.gz citest
+      - name: upload package
+        uses: actions/upload-artifact@v2
+        with:
+          name: citest
+          path: citest.tar.gz
+
   run:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
+      - name: download package
+        uses: actions/download-artifact@v2
+        with:
+          name: citest
+
+      - name: unpack program
+        run: tar -xzf citest.tar.gz --strip-components=1
+
       - name: Run program
         run: python3 test.py
 
-  compare-mips:
+      - name: upload benchmark result
+        uses: actions/upload-artifact@v2
+        with:
+          name: benchmark
+          path: run_results.json
+
+  compare:
     needs: run
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: download package
+        uses: actions/download-artifact@v2
+        with:
+          name: citest
+
+      - name: download results
+        uses: actions/download-artifact@v2
+        with:
+          name: benchmark
+
+      - name: unpack program
+        run: tar -xzf citest.tar.gz --strip-components=1
+
+      - name: get old benchmark results
+        uses: actions/checkout@v2
         with:
           ref: benchmark_results
           path: benchmark_results_old
