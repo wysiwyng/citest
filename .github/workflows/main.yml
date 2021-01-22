@@ -46,6 +46,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./benchmark_results_new
           publish_branch: benchmark_results
+          enable_jekyll: true
 
       # Runs a set of commands using the runners shell
       - name: Run comparison
