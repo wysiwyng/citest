@@ -1,7 +1,7 @@
 import json
 import sys
 
-TOLERANCE = 0.75
+TOLERANCE = 0.7
 
 f1_name = sys.argv[1]
 f2_name = sys.argv[2]
