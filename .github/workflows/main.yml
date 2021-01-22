@@ -34,28 +34,11 @@ jobs:
       - name: Run benchmark
         run: python3 test.py
 
-      - name: List output dir
-        run: |
-          pwd
-          ls -la
-
-      - name: Create output dir
-        run: |
-          rm -rf benchmark_results_new
-          mkdir benchmarks_results_new
-
-      - name: List output dir
-        run: |
-          pwd
-          ls -la
-
       - name: Save benchmark results
-        run: cp run_results.json benchmark_results_new/
-
-      - name: List output dir
         run: |
-          pwd
-          ls -la
+          cp run_results.json benchmark_results_new/
+          rm -rf benchmark_results_new
+          mkdir benchmark_results_new
 
       - name: Deploy results to git
         uses: peaceiris/actions-gh-pages@v3
