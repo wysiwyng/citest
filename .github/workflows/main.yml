@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -24,22 +24,25 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        
+
       - uses: actions/checkout@v2
         with:
           ref: benchmark_results
           path: benchmark_results_old
-        
+
       # Runs a single command using the runners shell
       - name: Run benchmark
         run: python3 test.py
-      
+
       - name: Save results
         run: |
           rm -rf benchmark_results_new
           mkdir -p benchmarks_results_new
           cp run_results.json benchmark_results_new
-          
+
+      - name: List output dir
+        run: ls -la benchmark_results_new
+
       - name: Deploy results to git
         uses: peaceiris/actions-gh-pages@v3
         with:
