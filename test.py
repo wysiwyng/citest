@@ -12,3 +12,5 @@ outdict = {
 
 with open('run_results.json', 'w') as f:
     json.dump(outdict, f)
+
+print("done")
