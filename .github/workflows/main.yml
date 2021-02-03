@@ -86,5 +86,33 @@ jobs:
           publish_branch: benchmark_results
           enable_jekyll: true
 
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: 1
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown** :sparkles:
+            - Created by [create-or-update-comment][1]
+
+            [1]: https://github.com/peter-evans/create-or-update-comment
+          reactions: '+1'
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: 1
+          body-includes: This comment was written by a bot!
+
+      - name: Update comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            This is job ${{ github.job }}
+
+            This comment was written by a bot!
+
       - name: Run comparison
         run: python3 compare.py benchmark_results_old/run_results.json run_results.json
