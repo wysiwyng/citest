@@ -15,62 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJSON(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJSON(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJSON(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
-
-      - name: compress program
-        run: |
-          mkdir citest
-          cp generate_mips.py compare.py citest
-          tar -czf citest.tar.gz citest
-      - name: upload package
-        uses: actions/upload-artifact@v2
-        with:
-          name: citest
-          path: citest.tar.gz
-
-  run:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: download package
-        uses: actions/download-artifact@v2
-        with:
-          name: citest
-
-      - name: unpack program
-        run: tar -xzf citest.tar.gz --strip-components=1
-
       - name: Run program
         run: python3 generate_mips.py
 
       - name: upload benchmark result
         uses: actions/upload-artifact@v2
         with:
-          name: benchmark
+          name: benchmark_results
           path: run_results.json
 
   compare:
@@ -78,27 +29,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: install dependencies
-        run: pip install mako
-
-      - name: download package
-        uses: actions/download-artifact@v2
-        with:
-          name: citest
-
-      - name: download results
-        uses: actions/download-artifact@v2
-        with:
-          name: benchmark
-
-      - name: unpack program
-        run: tar -xzf citest.tar.gz --strip-components=1
+      - uses: actions/checkout@v2
 
       - name: get old benchmark results
         uses: actions/checkout@v2
         with:
           ref: benchmark_results
           path: benchmark_results_old
+
+      - name: install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Get new benchmark results
+        uses: actions/download-artifact@v2
+        with:
+          name: benchmark_results
 
       - name: Save benchmark results
         run: |
@@ -118,7 +63,8 @@ jobs:
           publish_branch: benchmark_results
           enable_jekyll: true
 
-      - id: get-comment-body
+      - name: Load comment body
+        id: get-comment-body
         run: |
           body=$(cat mips_issue_text.md)
           body="${body//'%'/'%25'}"
