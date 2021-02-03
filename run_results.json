@@ -1,1 +1,1 @@
-{"mips": 18, "cputime": 22.1903, "simtime": 20.7443, "cpucycles": 710091000.0}
+{"mips": 23.852811974354143, "cputime": 22.1903, "simtime": 20.7443, "cpucycles": 710091000.0, "best_mips": 23.852811974354143, "best_hash": "9a19aa7a4c6185cd7e51729315b3ce71e573806b", "regressed_hash": null}
