@@ -25,7 +25,7 @@ jobs:
           path: run_results.json
 
   compare:
-    needs: run
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
