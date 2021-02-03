@@ -5,8 +5,16 @@ import shutil
 
 from mako.template import Template
 
+ISSUE_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
+
+**Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips}
+**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${f'{best_diff:+.2%}'}
+
+<sub>This comment was created automatically, please do not change!</sub>
+'''
+
 def main(new_file, old_file, current_hash, tolerance, no_update):
-    issue_template = Template(filename='.github/mips_issue_template.mako')
+    issue_template = Template(text=ISSUE_TEMPLATE)
 
     new_path = pathlib.Path(new_file)
     old_path = pathlib.Path(old_file)
@@ -64,7 +72,7 @@ def main(new_file, old_file, current_hash, tolerance, no_update):
         with open(new_path, 'w') as f1:
             json.dump(new_dict, f1)
 
-    with open('.github/mips_issue_text.md', 'w') as f1:
+    with open('mips_issue_text.md', 'w') as f1:
         f1.write(issue_template.render(
             current_hash=current_hash,
             new_mips=new_mips,
