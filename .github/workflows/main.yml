@@ -43,7 +43,7 @@ jobs:
       - name: compress program
         run: |
           mkdir citest
-          cp test.py compare.py citest
+          cp generate_mips.py compare.py citest
           tar -czf citest.tar.gz citest
       - name: upload package
         uses: actions/upload-artifact@v2
@@ -65,7 +65,7 @@ jobs:
         run: tar -xzf citest.tar.gz --strip-components=1
 
       - name: Run program
-        run: python3 test.py
+        run: python3 generate_mips.py
 
       - name: upload benchmark result
         uses: actions/upload-artifact@v2
@@ -103,6 +103,10 @@ jobs:
           mkdir benchmark_results_new
           cp run_results.json benchmark_results_new/
 
+      - name: Run comparison
+        id: compare
+        run: python3 compare.py benchmark_results_new/run_results.json benchmark_results_old/run_results.json ${{ github.sha }}
+
       - name: Deploy results to git
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -111,34 +115,33 @@ jobs:
           publish_branch: benchmark_results
           enable_jekyll: true
 
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: 1
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown** :sparkles:
-            - Created by [create-or-update-comment][1]
-
-            [1]: https://github.com/peter-evans/create-or-update-comment
-          reactions: '+1'
+      - id: get-comment-body
+        run: |
+          body=$(cat .github/mips_issue_text.md)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo ::set-output name=body::$body
 
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         id: fc
         with:
-          issue-number: 1
-          body-includes: This comment was written by a bot!
+          issue-number: 3
+          body-includes: This comment was created automatically, please do not change!
+
+      - name: Create comment
+        if: ${{ steps.fc.outputs.comment-id == 0 }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: 3
+          edit-mode: replace
+          body: ${{ steps.get-comment-body.outputs.body }}
 
       - name: Update comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
-          body: |
-            This is job ${{ github.run_id }}
+          body: ${{ steps.get-comment-body.outputs.body }}
 
-            This comment was written by a bot!
-
-      - name: Run comparison
-        run: python3 compare.py benchmark_results_old/run_results.json run_results.json

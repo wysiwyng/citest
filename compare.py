@@ -1,27 +1,88 @@
+import argparse
 import json
-import sys
+import pathlib
+import shutil
 
-TOLERANCE = 0.7
+from mako.template import Template
 
-f1_name = sys.argv[1]
-f2_name = sys.argv[2]
+def main(new_file, old_file, current_hash, tolerance, no_update):
+    issue_template = Template(filename='.github/mips_issue_template.mako')
 
-with open(f1_name, 'r') as f1, open(f2_name, 'r') as f2:
-    f1_dict = json.load(f1)
-    f2_dict = json.load(f2)
+    new_path = pathlib.Path(new_file)
+    old_path = pathlib.Path(old_file)
 
-f1_mips = f1_dict['mips']
-f2_mips = f2_dict['mips']
+    if not new_path.exists():
+        raise ValueError('file to compare does not exist!')
 
-lower_bound = f1_mips * TOLERANCE
-upper_bound = f1_mips * (2 - TOLERANCE)
+    if not old_path.exists():
+        print('WARN: file to compare against does not exist, assuming first compare')
+        shutil.copy(new_path, old_path)
 
-print(f'f1 mips: {f1_mips}')
-print(f'f2 mips: {f2_mips}')
+    with open(new_path, 'r') as f1, open(old_path, 'r') as f2:
+        new_dict = json.load(f1)
+        old_dict = json.load(f2)
 
-if f2_mips < lower_bound:
-    sys.exit(2)
-elif f2_mips > upper_bound:
-    sys.exit(1)
-else:
-    sys.exit(0)
+    new_mips = new_dict['mips']
+
+    old_best_mips = best_mips = old_dict.get('best_mips', 0.00000001)
+    old_best_hash = best_hash = old_dict.get('best_hash', None)
+    regressed_hash = old_dict.get('regressed_hash', None)
+
+    best_diff = new_mips / best_mips - 1
+
+    regressed = False
+
+    if best_diff < -tolerance:
+        message = f'⚠ Major regression since commit {regressed_hash} ⚠'
+        print('major regression')
+        if regressed_hash is None:
+            message = f'⚠ Major regression introduced! ⚠'
+            regressed_hash = current_hash
+        regressed = True
+
+    elif new_mips > best_mips:
+        print('new best')
+        message = '🥇 New best performance!'
+        best_mips = new_mips
+        best_hash = current_hash
+        regressed_hash = None
+
+    else:
+        if regressed_hash is not None:
+            message = 'Regression cleared'
+            print('regression cleared')
+        else:
+            message = 'No significant performance change'
+            print('no significant change')
+        regressed_hash = None
+
+    new_dict['best_mips'] = best_mips
+    new_dict['best_hash'] = best_hash
+    new_dict['regressed_hash'] = regressed_hash
+
+    if not no_update:
+        with open(new_path, 'w') as f1:
+            json.dump(new_dict, f1)
+
+    with open('.github/mips_issue_text.md', 'w') as f1:
+        f1.write(issue_template.render(
+            current_hash=current_hash,
+            new_mips=new_mips,
+            message=message,
+            best_mips=old_best_mips,
+            best_hash=old_best_hash,
+            best_diff=best_diff
+        ))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('new_file')
+    parser.add_argument('old_file')
+    parser.add_argument('git_commit_hash')
+    parser.add_argument('-t', '--tolerance', default=0.2)
+    parser.add_argument('-n', '--no_update', action='store_true')
+
+    args = parser.parse_args()
+
+    main(args.new_file, args.old_file, args.git_commit_hash, args.tolerance, args.no_update)
