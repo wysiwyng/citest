@@ -72,7 +72,7 @@ jobs:
 
   display-push:
     needs: compare
-    runs-on: ubunutu-latest
+    runs-on: ubuntu-latest
     if: ${{github.event_name == 'push'}}
 
     steps:
@@ -115,7 +115,7 @@ jobs:
 
   display-pr:
     needs: compare
-    runs-on: ubunutu-latest
+    runs-on: ubuntu-latest
     if: ${{github.event_name == 'pull_request'}}
 
     steps:
