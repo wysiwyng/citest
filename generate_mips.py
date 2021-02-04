@@ -2,7 +2,7 @@ import random
 import json
 
 def main():
-    mips = random.uniform(10, 100)
+    mips = random.uniform(50, 100)
 
     outdict = {
         'mips': mips,
