@@ -48,7 +48,7 @@ def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
     regressed = False
 
     if best_diff < -tolerance:
-        regressed_hash = f"[{current_hash[:8]}](https://github.com/{repo_url}/commit/{regressed_hash})"
+        regressed_hash = f"[{regressed_hash[:8]}](https://github.com/{repo_url}/commit/{regressed_hash})"
         message = f'⚠ Major regression since commit {regressed_hash} ⚠'
         print('major regression')
         if regressed_hash is None:
@@ -99,7 +99,7 @@ def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
         old_best_hash = f"[{old_best_hash[:8]}](https://github.com/{repo_url}/commit/{old_best_hash})"
 
         with open('wiki_text.md', 'w') as f1:
-            f1.write(issue_template.render(
+            f1.write(wiki_template.render(
                 current_hash=current_hash,
                 new_mips=new_mips,
                 message=message,
