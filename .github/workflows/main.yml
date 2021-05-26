@@ -100,7 +100,7 @@ jobs:
           cd wiki
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          echo ${{ steps.get-comment-body.outputs.body }} > perf.md
+          cp ../mips_issue_text.md ./perf.md
           git add perf.md
           git commit -m "update perf"
           git push
