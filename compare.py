@@ -15,7 +15,7 @@ ISSUE_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 
 WIKI_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 
-**Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips} \
+**Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips} \\
 **Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${best_diff}
 '''
 
