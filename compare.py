@@ -79,8 +79,8 @@ def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
         with open(new_path, 'w') as f1:
             json.dump(new_dict, f1)
 
-    new_mips = f"{new_mips:+.2%}"
-    old_best_mips = f"{old_best_mips:+.2%}"
+    new_mips = f"{new_mips:.2}"
+    old_best_mips = f"{old_best_mips:.2}"
     best_diff = f"{best_diff:+.2%}"
 
     with open('mips_issue_text.md', 'w') as f1:
