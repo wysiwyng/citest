@@ -53,7 +53,7 @@ jobs:
 
       - name: Run comparison (Push)
         if: ${{github.event_name == 'push'}}
-        run: python3 compare.py benchmark_results_new/run_results.json benchmark_results_old/run_results.json ${{ github.sha }} $GITHUB_REPOSITORY
+        run: python3 compare.py benchmark_results_new/run_results.json benchmark_results_old/run_results.json ${{ github.sha }} -r $GITHUB_REPOSITORY
 
       - name: Run comparison (PR)
         if: ${{github.event_name == 'pull_request'}}
