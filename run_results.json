@@ -1,1 +1,1 @@
-{"mips": 23.698408632566025, "cputime": 22.1903, "simtime": 20.7443, "cpucycles": 710091000.0, "best_mips": 97.00970092668703, "best_hash": "6fa925a6ba63e6d1d020bdf91ca9a1059ebdfa9b", "regressed_hash": "[c9fef0ae](https://github.com/wysiwyng/citest/commit/None)"}
+{"mips": 20.449025312476316, "cputime": 22.1903, "simtime": 20.7443, "cpucycles": 710091000.0, "best_mips": 97.00970092668703, "best_hash": "6fa925a6ba63e6d1d020bdf91ca9a1059ebdfa9b", "regressed_hash": "[bcdfdf65](https://github.com/wysiwyng/citest/commit/[c9fef0ae](https://github.com/wysiwyng/citest/commit/None))"}
