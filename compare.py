@@ -48,8 +48,8 @@ def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
     regressed = False
 
     if best_diff < -tolerance:
-        message = f'⚠ Major regression since commit {regressed_hash} ⚠'
         regressed_hash = f"[{current_hash[:8]}](https://github.com/{repo_url}/commit/{regressed_hash})"
+        message = f'⚠ Major regression since commit {regressed_hash} ⚠'
         print('major regression')
         if regressed_hash is None:
             message = f'⚠ Major regression introduced! ⚠'
