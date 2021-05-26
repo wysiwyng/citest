@@ -8,7 +8,7 @@ from mako.template import Template
 ISSUE_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 
 **Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips}
-**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${f'{best_diff:+.2%}'}
+**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${best_diff}
 
 <sub>This comment was created automatically, please do not change!</sub>
 '''
@@ -16,7 +16,7 @@ ISSUE_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 WIKI_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 
 **Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips}
-**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${f'{best_diff:+.2%}'}
+**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${best_diff}
 '''
 
 def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
@@ -78,6 +78,10 @@ def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
     if not no_update:
         with open(new_path, 'w') as f1:
             json.dump(new_dict, f1)
+
+    new_mips = f"{new_mips:+.2%}"
+    old_best_mips = f"{old_best_mips:+.2%}"
+    best_diff = f"{best_diff:+.2%}"
 
     with open('mips_issue_text.md', 'w') as f1:
         f1.write(issue_template.render(
