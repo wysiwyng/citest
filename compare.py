@@ -13,8 +13,15 @@ ISSUE_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
 <sub>This comment was created automatically, please do not change!</sub>
 '''
 
-def main(new_file, old_file, current_hash, tolerance, no_update):
+WIKI_TEMPLATE = r'''**Status** (for commit ${current_hash})**:** ${message}
+
+**Current dhrystone MIPS** (in commit ${current_hash})**:** ${new_mips}
+**Previous best** (recorded in commit ${best_hash})**:** ${best_mips}, difference ${f'{best_diff:+.2%}'}
+'''
+
+def main(new_file, old_file, current_hash, tolerance, no_update, repo_url):
     issue_template = Template(text=ISSUE_TEMPLATE)
+    wiki_template = Template(text=WIKI_TEMPLATE)
 
     new_path = pathlib.Path(new_file)
     old_path = pathlib.Path(old_file)
@@ -82,6 +89,20 @@ def main(new_file, old_file, current_hash, tolerance, no_update):
             best_diff=best_diff
         ))
 
+    if repo_url:
+        current_hash = f"[{current_hash[:8]}](https://github.com/{repo_url}/commit/{current_hash})"
+        old_best_hash = f"[{old_best_hash[:8]}](https://github.com/{repo_url}/commit/{old_best_hash})"
+
+        with open('wiki_text.md', 'w') as f1:
+            f1.write(issue_template.render(
+                current_hash=current_hash,
+                new_mips=new_mips,
+                message=message,
+                best_mips=old_best_mips,
+                best_hash=old_best_hash,
+                best_diff=best_diff
+            ))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -90,7 +111,8 @@ if __name__ == '__main__':
     parser.add_argument('git_commit_hash')
     parser.add_argument('-t', '--tolerance', default=0.2)
     parser.add_argument('-n', '--no_update', action='store_true')
+    parser.add_argument('-r', '--repo_url')
 
     args = parser.parse_args()
 
-    main(args.new_file, args.old_file, args.git_commit_hash, args.tolerance, args.no_update)
+    main(args.new_file, args.old_file, args.git_commit_hash, args.tolerance, args.no_update, args.repo_url)
