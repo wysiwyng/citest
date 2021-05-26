@@ -74,6 +74,37 @@ jobs:
           name: mips_issue_text.md
           path: mips_issue_text.md
 
+  display-wiki:
+    needs: compare
+    runs-on: ubuntu-latest
+    if: ${{github.event_name == 'push'}}
+
+    steps:
+      - name: Get comment text
+        uses: actions/download-artifact@v2
+        with:
+          name: mips_issue_text.md
+
+      - name: Load comment body
+        id: get-comment-body
+        run: |
+          body=$(cat mips_issue_text.md)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo ::set-output name=body::$body
+
+      - name: Update wiki
+        run: |
+          git clone "https://$GITHUB_ACTOR:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.wiki.git" "wiki"
+          cd wiki
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          echo ${{ steps.get-comment-body.outputs.body }} > perf.md
+          git add perf.md
+          git commit -m "update perf"
+          git push
+
   display-push:
     needs: compare
     runs-on: ubuntu-latest
