@@ -50,7 +50,7 @@ jobs:
 
   compare:
     needs: build
-    if: ${{github.ref == 'refs/head/master'}}
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
