@@ -33,6 +33,9 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJSON(matrix) }}
         run: echo "$MATRIX_CONTEXT"
+      - name: CPU Info
+        run: cat /proc/cpuinfo
+        
   build:
     runs-on: ubuntu-latest
 
